@@ -1,8 +1,10 @@
 package org.example.shelf.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.example.shelf.documentation.DocumentationConstants;
+import org.example.shelf.exception.ItemNotFoundException;
 import org.example.shelf.model.Author;
 import org.example.shelf.repository.AuthorRepository;
 import org.jsondoc.core.annotation.Api;
@@ -36,8 +38,11 @@ public class AuthorController {
 	@ApiMethod(id = DocumentationConstants.AUTHOR_FIND_ONE)
 	@ApiAuthToken
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public @ApiResponseObject Author findOne(@ApiPathParam(name = "id") @PathVariable Long id) {
-		return authorRepository.findOne(id);
+	public @ApiResponseObject Author findOne(@ApiPathParam(name = "id") @PathVariable Long id) throws ItemNotFoundException {
+		Optional<Author> author = authorRepository.findById(id);
+		if(!author.isPresent())
+			throw new ItemNotFoundException();
+		return author.get();
 	}
 
 	@ApiMethod(id = DocumentationConstants.AUTHOR_FIND_ALL)
@@ -60,9 +65,11 @@ public class AuthorController {
 	@ApiMethod(id = DocumentationConstants.AUTHOR_DELETE)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void delete(@ApiPathParam(name = "id") @PathVariable Long id) {
-		Author author = authorRepository.findOne(id);
-		authorRepository.delete(author);
+	public void delete(@ApiPathParam(name = "id") @PathVariable Long id) throws ItemNotFoundException {
+		Optional<Author> author = authorRepository.findById(id);
+		if(!author.isPresent())
+			throw new ItemNotFoundException();
+		authorRepository.delete(author.get());
 	}
 
 }

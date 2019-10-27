@@ -8,11 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Builder;
+import lombok.*;
 
 import org.example.shelf.documentation.DocumentationConstants;
 import org.jsondoc.core.annotation.ApiObject;
