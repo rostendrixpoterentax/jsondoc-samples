@@ -1,6 +1,7 @@
 package org.example.shelf.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.example.shelf.documentation.DocumentationConstants;
 import org.example.shelf.exception.ItemNotFoundException;
@@ -31,12 +32,10 @@ public class UserController {
 	})
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public User findOne(@PathVariable("id") Long id) throws ItemNotFoundException {
-		User findOne = userRepository.findOne(id);
-		if(findOne == null) {
+		Optional<User> findOne = userRepository.findById(id);
+		if(!findOne.isPresent())
 			throw new ItemNotFoundException();
-		} else {
-			return findOne; 
-		}
+		return findOne.get();
 	}
 	
 	@RequestMapping

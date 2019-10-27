@@ -1,8 +1,10 @@
 package org.example.shelf.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.example.shelf.documentation.DocumentationConstants;
+import org.example.shelf.exception.ItemNotFoundException;
 import org.example.shelf.model.Book;
 import org.example.shelf.repository.BookRepository;
 import org.jsondoc.core.annotation.Api;
@@ -33,8 +35,11 @@ public class BookController {
 	
 	@ApiMethod(id = DocumentationConstants.BOOK_FIND_ONE, summary = "Gets a book given the book ID")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public @ApiResponseObject Book findOne(@ApiPathParam(name = "id") @PathVariable Long id) {
-		return bookRepository.findOne(id);
+	public @ApiResponseObject Book findOne(@ApiPathParam(name = "id") @PathVariable Long id) throws ItemNotFoundException {
+		Optional<Book> book = bookRepository.findById(id);
+		if(!book.isPresent())
+			throw new ItemNotFoundException();
+		return book.get();
 	}
 	
 	@ApiMethod(id = DocumentationConstants.BOOK_FIND_ALL)
@@ -57,9 +62,11 @@ public class BookController {
 	@ApiMethod(id = DocumentationConstants.BOOK_DELETE)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void delete(@ApiPathParam(name = "id") @PathVariable Long id) {
-		Book book = bookRepository.findOne(id);
-		bookRepository.delete(book);
+	public void delete(@ApiPathParam(name = "id") @PathVariable Long id) throws ItemNotFoundException {
+		Optional<Book> book = bookRepository.findById(id);
+		if(!book.isPresent())
+			throw new ItemNotFoundException();
+		bookRepository.delete(book.get());
 	}
 
 }
